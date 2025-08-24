@@ -1,0 +1,90 @@
+package com.codewithmosh.store.carts;
+
+import java.util.UUID;
+
+import org.springframework.stereotype.Service;
+
+import com.codewithmosh.store.products.ProductNotFoundException;
+import com.codewithmosh.store.products.ProductRepository;
+
+import lombok.AllArgsConstructor;
+
+@AllArgsConstructor
+@Service
+public class CartService {
+    private final CartRepository cartRepository;    
+    private final CartMapper cartMapper;
+    private final ProductRepository productRepository;
+
+
+    public CartDto createCart() {
+        var cart = new Cart();
+        cartRepository.save(cart);
+        return cartMapper.toDto(cart);
+    }
+
+    public CartItemDto addItemToCart(UUID cartId, Long productId) {
+        var cart = cartRepository.getCartWithItems(cartId)
+            .orElse(null);
+            if (cart == null) {
+                throw new CartNotFoundException();
+            }
+        var product = productRepository.findById(productId)
+            .orElse(null);
+            if (product == null) {
+                throw new ProductNotFoundException();
+            }
+        var cartItem = cart.addCartItem(product);
+        cartRepository.save(cart);
+        return cartMapper.toDto(cartItem);  
+    }
+
+    public CartDto getCart(UUID cartId) {
+        var cart = cartRepository.getCartWithItems(cartId)
+            .orElse(null);
+            if (cart == null) {
+                throw new CartNotFoundException();
+            }
+        return cartMapper.toDto(cart);
+    }
+
+    public CartItemDto updateCartItem(UUID cartId, Long productId, Integer quantity) {
+        var cart = cartRepository.getCartWithItems(cartId)
+            .orElse(null);
+            if (cart == null) {
+                throw new CartNotFoundException();
+            }
+        var product = productRepository.findById(productId)
+            .orElse(null);
+        if (product == null) {
+            throw new ProductNotFoundException();
+        }
+        var cartItem = cart.getCartItem(productId);
+        if (cartItem == null) {
+            throw new ProductNotFoundException();
+        }
+        cartItem.setQuantity(quantity);
+        cartRepository.save(cart);
+        return cartMapper.toDto(cartItem);
+    }
+
+    public void deleteCartItem(UUID cartId, Long productId) {
+        var cart = cartRepository.getCartWithItems(cartId)
+            .orElse(null);
+            if (cart == null) {
+                throw new CartNotFoundException();
+            }
+        cart.removeCartItem(productId);
+        cartRepository.save(cart);
+    }
+
+    public void clearCart(UUID cartId) {
+        var cart = cartRepository.getCartWithItems(cartId)
+            .orElse(null);
+            if (cart == null) {
+                throw new CartNotFoundException();
+            }
+        cart.clearCart();
+        cartRepository.save(cart);
+    }
+}

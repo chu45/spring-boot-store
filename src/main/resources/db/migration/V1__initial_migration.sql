@@ -26,6 +26,7 @@ CREATE TABLE products
     CONSTRAINT `PRIMARY` PRIMARY KEY (id)
 );
 
+
 CREATE TABLE profiles
 (
     id             BIGINT NOT NULL,
