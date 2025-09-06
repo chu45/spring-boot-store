@@ -53,8 +53,17 @@ public class SecurityConfig {
         http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         http.csrf(AbstractHttpConfigurer::disable);
         http.authorizeHttpRequests(auth -> auth.requestMatchers("/carts/**").permitAll()
+        .requestMatchers("/swagger-ui/**").permitAll()
+        .requestMatchers("/swagger-ui.html").permitAll()
+        .requestMatchers("/v3/api-docs/**").permitAll()
+        .requestMatchers("/actuator/health", "/actuator/info").permitAll()
+        .requestMatchers("/", "/index.html").permitAll()
         .requestMatchers("/admin/**").hasRole(Role.ADMIN.name())
         .requestMatchers(HttpMethod.POST, "/users/**").permitAll()
+        .requestMatchers(HttpMethod.GET, "/Products/**").permitAll()
+        .requestMatchers(HttpMethod.POST, "/Products/**").hasRole(Role.ADMIN.name())
+        .requestMatchers(HttpMethod.PUT, "/Products/**").hasRole(Role.ADMIN.name())
+        .requestMatchers(HttpMethod.DELETE, "/Products/**").hasRole(Role.ADMIN.name())
         .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
         .requestMatchers(HttpMethod.POST, "/auth/refresh").permitAll()
         .requestMatchers(HttpMethod.POST, "/checkout/webhook").permitAll()

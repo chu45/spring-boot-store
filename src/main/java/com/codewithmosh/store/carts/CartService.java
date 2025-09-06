@@ -19,8 +19,8 @@ public class CartService {
 
     public CartDto createCart() {
         var cart = new Cart();
-        cartRepository.save(cart);
-        return cartMapper.toDto(cart);
+        var savedCart = cartRepository.save(cart);
+        return cartMapper.toDto(savedCart);
     }
 
     public CartItemDto addItemToCart(UUID cartId, Long productId) {

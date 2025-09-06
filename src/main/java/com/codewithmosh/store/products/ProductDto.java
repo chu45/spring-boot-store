@@ -12,4 +12,5 @@ public class ProductDto {
     private BigDecimal price;
     private Byte categoryId;
 
+
 }

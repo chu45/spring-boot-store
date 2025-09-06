@@ -75,10 +75,10 @@ public class UserController {
     @PostMapping("/users/{id}/change-password")
     public ResponseEntity<Void> changePassword(@PathVariable(name = "id") Long id, @RequestBody ChangePasswordRequest request) {
         var user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
-        if (!user.getPassword().equals(request.getCurrentPassword())) {
+        if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
             return ResponseEntity.badRequest().build();
         }
-        user.setPassword(request.getNewPassword());
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
         userRepository.save(user);
         return ResponseEntity.noContent().build();
     }
